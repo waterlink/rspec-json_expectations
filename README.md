@@ -1,4 +1,4 @@
-# Rspec::JsonExpectations
+# RSpec::JsonExpectations
 
 TODO: Write a gem description
 

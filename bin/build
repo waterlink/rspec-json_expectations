@@ -1,0 +1,3 @@
+#!/bin/bash
+
+bin/with-rspec-2 install && bin/with-rspec-3 install && bin/with-rspec-2 exec cucumber && bin/with-rspec-3 exec cucumber && echo "SUCCESS" || echo "FAILED"

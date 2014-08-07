@@ -5,7 +5,7 @@ require 'rspec/json_expectations/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "rspec-json_expectations"
-  spec.version       = Rspec::JsonExpectations::VERSION
+  spec.version       = RSpec::JsonExpectations::VERSION
   spec.authors       = ["Alexey Fedorov"]
   spec.email         = ["alexey.fedorov@wimdu.com"]
   spec.summary       = %q{TODO: Write a short summary. Required.}
