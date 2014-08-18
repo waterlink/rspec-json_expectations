@@ -1,5 +1,10 @@
 Feature: include_json matcher
 
+  As a developer extensively testing my APIs with RSpec
+  I want to have a suitable tool to test my API responses
+  And I want to use simple ruby hashes to describe the parts of response
+  For that I need a custom matcher
+
   Background:
     Given a file "spec/spec_helper.rb" with:
           """ruby
@@ -25,7 +30,7 @@ Feature: include_json matcher
           }
           """
 
-  Scenario: Simple usage example
+  Scenario: Expecting json string to include simple json
     Given a file "spec/simple_example_spec.rb" with:
           """ruby
           require "spec_helper"
@@ -48,7 +53,7 @@ Feature: include_json matcher
           1 example, 0 failures
           """
 
-  Scenario: Simple usage with failure
+  Scenario: Expecting wrong json string to include simple json
     Given a file "spec/simple_with_fail_spec.rb" with:
           """ruby
           require "spec_helper"
@@ -85,7 +90,7 @@ Feature: include_json matcher
           # ./spec/simple_with_fail_spec.rb
           """
 
-  Scenario: Excessive fields on subject json are ignored
+  Scenario: Expecting json response with excessive fields to include 'smaller' json
     Given a file "spec/excessive_fields_spec.rb" with:
           """ruby
           require "spec_helper"
