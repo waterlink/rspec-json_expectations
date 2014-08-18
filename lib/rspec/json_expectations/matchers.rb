@@ -45,7 +45,7 @@ RSpec::Matchers.define :include_json do |expected|
     end
 
     RSpec::JsonExpectations::JsonTraverser.traverse(
-      example.metadata[:include_json_errors] = {},
+      @include_json_errors = {},
       expected,
       JSON.parse(actual)
     )
@@ -57,7 +57,7 @@ RSpec::Matchers.define :include_json do |expected|
        :failure_message_for_should) do |actual|
          res = []
 
-         example.metadata[:include_json_errors].each do |json_path, error|
+         @include_json_errors.each do |json_path, error|
            res << %{
            json atom on path "#{json_path}" is missing
            } if error == :no_key
