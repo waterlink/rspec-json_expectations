@@ -1,4 +1,4 @@
-Feature: it_conforms_to_json syntax
+Feature: include_json matcher
 
   Background:
     Given a file "spec/spec_helper.rb" with:
@@ -34,17 +34,19 @@ Feature: it_conforms_to_json syntax
           RSpec.describe "A json response" do
             subject { '%{SIMPLE_JSON}' }
 
-            it_conforms_to_json(
-              id: 25,
-              email: "john.smith@example.com",
-              name: "John"
-            )
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                id: 25,
+                email: "john.smith@example.com",
+                name: "John"
+              )
+            end
           end
           """
      When I run "rspec spec/simple_example_spec.rb"
      Then I see:
           """
-          3 examples, 0 failures
+          1 example, 0 failures
           """
 
   Scenario: Simple usage with failure
@@ -55,11 +57,13 @@ Feature: it_conforms_to_json syntax
           RSpec.describe "A json response" do
             subject { '%{SIMPLE_JSON}' }
 
-            it_conforms_to_json(
-              id: 37,
-              email: "john.smith@example.com",
-              name: "Smith"
-            )
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                id: 37,
+                email: "john.smith@example.com",
+                name: "Smith"
+              )
+            end
           end
           """
      When I run "rspec spec/simple_with_fail_spec.rb"
@@ -86,12 +90,14 @@ Feature: it_conforms_to_json syntax
           RSpec.describe "A json response" do
             subject { '%{BIG_JSON}' }
 
-            it_conforms_to_json(
-              id: 25,
-              name: "John",
-              profile_id: 39,
-              role: "admin"
-            )
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                id: 25,
+                name: "John",
+                profile_id: 39,
+                role: "admin"
+              )
+            end
           end
           """
      When I run "rspec spec/excessive_fields_spec.rb"
