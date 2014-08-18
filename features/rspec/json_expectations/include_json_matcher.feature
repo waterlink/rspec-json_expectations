@@ -2,11 +2,11 @@ Feature: include_json matcher
 
   Background:
     Given a file "spec/spec_helper.rb" with:
-          """
+          """ruby
           require "rspec/json_expectations"
           """
       And a local "SIMPLE_JSON" with:
-          """
+          """json
           {
             "id": 25,
             "email": "john.smith@example.com",
@@ -14,7 +14,7 @@ Feature: include_json matcher
           }
           """
       And a local "BIG_JSON" with:
-          """
+          """json
           {
             "id": 25,
             "email": "john.smith@example.com",
@@ -27,7 +27,7 @@ Feature: include_json matcher
 
   Scenario: Simple usage example
     Given a file "spec/simple_example_spec.rb" with:
-          """
+          """ruby
           require "spec_helper"
 
           RSpec.describe "A json response" do
@@ -50,7 +50,7 @@ Feature: include_json matcher
 
   Scenario: Simple usage with failure
     Given a file "spec/simple_with_fail_spec.rb" with:
-          """
+          """ruby
           require "spec_helper"
 
           RSpec.describe "A json response" do
@@ -81,13 +81,13 @@ Feature: include_json matcher
                                    got: "John"
           """
       And I see:
-          """
+          """ruby
           # ./spec/simple_with_fail_spec.rb
           """
 
   Scenario: Excessive fields on subject json are ignored
     Given a file "spec/excessive_fields_spec.rb" with:
-          """
+          """ruby
           require "spec_helper"
 
           RSpec.describe "A json response" do
