@@ -77,13 +77,13 @@ Feature: include_json matcher
           """
       And I see:
           """
-                              expected: 37
-                                   got: 25
+                             expected: 37
+                                  got: 25
           """
       And I see:
           """
-                              expected: "Smith"
-                                   got: "John"
+                             expected: "Smith"
+                                  got: "John"
           """
       And I see:
           """ruby
