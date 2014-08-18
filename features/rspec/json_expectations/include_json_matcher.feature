@@ -4,7 +4,6 @@ Feature: include_json matcher
     Given a file "spec/spec_helper.rb" with:
           """
           require "rspec/json_expectations"
-          enable_json_expectations!
           """
       And a local "SIMPLE_JSON" with:
           """
@@ -69,17 +68,21 @@ Feature: include_json matcher
      When I run "rspec spec/simple_with_fail_spec.rb"
      Then I see:
           """
-          3 examples, 2 failures
+          1 example, 1 failure
           """
       And I see:
           """
-                 expected: 37
-                      got: 25
+                              expected: 37
+                                   got: 25
           """
       And I see:
           """
-                 expected: "Smith"
-                      got: "John"
+                              expected: "Smith"
+                                   got: "John"
+          """
+      And I see:
+          """
+          # ./spec/simple_with_fail_spec.rb
           """
 
   Scenario: Excessive fields on subject json are ignored
@@ -103,6 +106,6 @@ Feature: include_json matcher
      When I run "rspec spec/excessive_fields_spec.rb"
      Then I see:
           """
-          4 examples, 0 failures
+          1 example, 0 failures
           """
 
