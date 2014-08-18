@@ -1,13 +1,7 @@
 source 'https://rubygems.org'
 
 # Specify your gem's dependencies in rspec-json_expectations.gemspec
-if File.exist?(`ls *.gemspec`.strip)
-  path = '..'
-else
-  path = '../..'
-end
-
-gemspec path: path
+gemspec path: '..'
 
 group :test do
   gem 'cucumber'

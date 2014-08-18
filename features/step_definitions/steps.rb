@@ -3,6 +3,7 @@ DUMMY_FOLDER = "dummy"
 def init
   `mkdir -p #{DUMMY_FOLDER}`
   `cp -r gemfiles #{DUMMY_FOLDER}`
+  `cp *.gemspec #{DUMMY_FOLDER}`
   `cp -r lib #{DUMMY_FOLDER}`
 end
 
