@@ -94,6 +94,8 @@ rspec ./spec/user_api_spec.rb:17 # User API has basic info about user
 rspec ./spec/user_api_spec.rb:25 # User API has some additional info about user
 ```
 
+For other features look into documentation: https://www.relishapp.com/waterlink/rspec-json-expectations/docs/json-expectations
+
 ## Contributing
 
 1. Fork it ( https://github.com/waterlink/rspec-json_expectations/fork )
