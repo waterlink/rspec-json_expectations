@@ -1,5 +1,7 @@
 # RSpec::JsonExpectations
 
+[![Build Status](https://travis-ci.org/waterlink/rspec-json_expectations.svg?branch=master)](https://travis-ci.org/waterlink/rspec-json_expectations)
+
 Set of matchers and helpers to allow you test your APIs responses like a pro.
 
 ## Installation
