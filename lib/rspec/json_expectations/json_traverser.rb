@@ -7,12 +7,13 @@ module RSpec
     # match. Errors are accumulated in errors hash for each
     # json atom paths.
     class JsonTraverser
-      SUPPORTED_VALUES = [Hash, String, Numeric, Regexp]
+      SUPPORTED_VALUES = [Hash, String, Numeric, Regexp, Array]
 
       class << self
         def traverse(errors, expected, actual, prefix=[])
           [
             handle_hash(errors, expected, actual, prefix),
+            handle_array(errors, expected, actual, prefix),
             handle_value(errors, expected, actual, prefix),
             handle_regex(errors, expected, actual, prefix),
             handle_unsupported(expected)
@@ -21,18 +22,29 @@ module RSpec
 
         private
 
-        def handle_hash(errors, expected, actual, prefix=[])
-          return nil unless expected.is_a?(Hash)
-
+        def handle_keyvalue(errors, expected, actual, prefix=[])
           expected.map do |key, value|
             new_prefix = prefix + [key]
-            if actual.has_key?("#{key}")
-              traverse(errors, value, actual["#{key}"], new_prefix)
+            if has_key?(actual, key)
+              traverse(errors, value, fetch(actual, key), new_prefix)
             else
               errors[new_prefix.join("/")] = :no_key
               false
             end
           end.all? || false
+        end
+
+        def handle_hash(errors, expected, actual, prefix=[])
+          return nil unless expected.is_a?(Hash)
+
+          handle_keyvalue(errors, expected, actual, prefix)
+        end
+
+        def handle_array(errors, expected, actual, prefix=[])
+          return nil unless expected.is_a?(Array)
+
+          transformed_expected = expected.each_with_index.map { |v, k| [k, v] }
+          handle_keyvalue(errors, transformed_expected, actual, prefix)
         end
 
         def handle_value(errors, expected, actual, prefix=[])
@@ -67,6 +79,26 @@ module RSpec
           unless SUPPORTED_VALUES.any? { |type| expected.is_a?(type) }
             raise NotImplementedError,
               "#{expected} expectation is not supported"
+          end
+        end
+
+        def has_key?(actual, key)
+          if actual.is_a?(Hash)
+            actual.has_key?(key.to_s)
+          elsif actual.is_a?(Array)
+            actual.count > key
+          else
+            false
+          end
+        end
+
+        def fetch(actual, key, default=nil)
+          if actual.is_a?(Hash)
+            actual[key.to_s]
+          elsif actual.is_a?(Array)
+            actual[key]
+          else
+            default
           end
         end
 
