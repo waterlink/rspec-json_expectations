@@ -1,5 +1,8 @@
 Feature: nested json support with include_json matcher
 
+  As a developer extensively testing my APIs
+  I want to be able to easily test nested JSON responses
+
   Background:
     Given a file "spec/spec_helper.rb" with:
           """ruby

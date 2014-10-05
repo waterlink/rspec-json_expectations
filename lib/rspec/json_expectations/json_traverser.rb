@@ -7,13 +7,14 @@ module RSpec
     # match. Errors are accumulated in errors hash for each
     # json atom paths.
     class JsonTraverser
-      SUPPORTED_VALUES = [Hash, String, Numeric]
+      SUPPORTED_VALUES = [Hash, String, Numeric, Regexp]
 
       class << self
         def traverse(errors, expected, actual, prefix=[])
           [
             handle_hash(errors, expected, actual, prefix),
             handle_value(errors, expected, actual, prefix),
+            handle_regex(errors, expected, actual, prefix),
             handle_unsupported(expected)
           ].any?
         end
@@ -38,6 +39,20 @@ module RSpec
           return nil unless expected.is_a?(String) || expected.is_a?(Numeric)
 
           if actual == expected
+            true
+          else
+            errors[prefix.join("/")] = {
+              actual: actual,
+              expected: expected
+            }
+            false
+          end
+        end
+
+        def handle_regex(errors, expected, actual, prefix=[])
+          return nil unless expected.is_a?(Regexp)
+
+          if expected.match(actual)
             true
           else
             errors[prefix.join("/")] = {
