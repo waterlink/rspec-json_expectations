@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = RSpec::JsonExpectations::VERSION
   spec.authors       = ["Alexey Fedorov"]
   spec.email         = ["alexey.fedorov@wimdu.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Set of matchers and helpers to allow you test your APIs responses like a pro.}
+  spec.description   = ""
+  spec.homepage      = "https://github.com/waterlink/rspec-json_expectations"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
