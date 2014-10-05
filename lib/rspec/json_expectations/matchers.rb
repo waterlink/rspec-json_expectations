@@ -1,6 +1,6 @@
 RSpec::Matchers.define :include_json do |expected|
   match do |actual|
-    unless expected.is_a?(Hash)
+    unless expected.is_a?(Hash) || expected.is_a?(Array)
       raise ArgumentError,
         "Expected value must be a json for include_json matcher"
     end

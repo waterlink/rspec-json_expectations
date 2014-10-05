@@ -37,6 +37,13 @@ Feature: Array matching support for include_json matcher
             ]
           }
           """
+      And a local "JSON_WITH_ROOT_ARRAY" with:
+          """json
+          [
+            "first flight",
+            "day & night"
+          ]
+          """
 
   Scenario: Expecting json string to fully include json with arrays
     Given a file "spec/nested_example_spec.rb" with:
@@ -160,3 +167,44 @@ Feature: Array matching support for include_json matcher
                            json atom at path "results/2/id" is not equal to expected value:
           """
 
+  Scenario: Expecting json string with array at root to fully include json with arrays
+    Given a file "spec/nested_example_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { '%{JSON_WITH_ROOT_ARRAY}' }
+
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                [ "first flight", "day & night" ]
+              )
+            end
+          end
+          """
+     When I run "rspec spec/nested_example_spec.rb"
+     Then I see:
+          """
+          1 example, 0 failures
+          """
+
+  Scenario: Expecting wrong json string with array at root to fully include json with arrays
+    Given a file "spec/nested_example_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { '%{JSON_WITH_ROOT_ARRAY}' }
+
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                [ "first flight", "day & night", "super hero" ]
+              )
+            end
+          end
+          """
+     When I run "rspec spec/nested_example_spec.rb"
+     Then I see:
+          """
+                           json atom at path "2" is missing
+          """
