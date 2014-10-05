@@ -4,37 +4,38 @@ module RSpec
     class FailurePresenter
       class << self
         def render(errors)
-          errors.map { |path, error| render_error(path, error) }.join
+          negate = errors[:_negate]
+          errors.map { |path, error| render_error(path, error, negate) }.join
         end
 
         private
 
-        def render_error(path, error)
+        def render_error(path, error, negate=false)
           [
-            render_no_key(path, error),
-            render_not_eq(path, error),
-            render_not_match(path, error)
+            render_no_key(path, error, negate),
+            render_not_eq(path, error, negate),
+            render_not_match(path, error, negate)
           ].select { |e| e }.first
         end
 
-        def render_no_key(path, error)
+        def render_no_key(path, error, negate=false)
           %{
           json atom at path "#{path}" is missing
           } if error == :no_key
         end
 
-        def render_not_eq(path, error)
+        def render_not_eq(path, error, negate=false)
           %{
-          json atom at path "#{path}" is not equal to expected value:
+          json atom at path "#{path}" #{negate ? "should" : "is"} not equal to expected value:
 
             expected: #{error[:expected].inspect}
                  got: #{error[:actual].inspect}
           } if error_is_not_eq?(error)
         end
 
-        def render_not_match(path, error)
+        def render_not_match(path, error, negate=false)
           %{
-          json atom at path "#{path}" does not match expected regex:
+          json atom at path "#{path}" #{negate ? "should" : "does"} not match expected regex:
 
             expected: #{error[:expected].inspect}
                  got: #{error[:actual].inspect}

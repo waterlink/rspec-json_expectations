@@ -10,47 +10,47 @@ module RSpec
       SUPPORTED_VALUES = [Hash, String, Numeric, Regexp, Array]
 
       class << self
-        def traverse(errors, expected, actual, prefix=[])
+        def traverse(errors, expected, actual, negate=false, prefix=[])
           [
-            handle_hash(errors, expected, actual, prefix),
-            handle_array(errors, expected, actual, prefix),
-            handle_value(errors, expected, actual, prefix),
-            handle_regex(errors, expected, actual, prefix),
+            handle_hash(errors, expected, actual, negate, prefix),
+            handle_array(errors, expected, actual, negate, prefix),
+            handle_value(errors, expected, actual, negate, prefix),
+            handle_regex(errors, expected, actual, negate, prefix),
             handle_unsupported(expected)
           ].any?
         end
 
         private
 
-        def handle_keyvalue(errors, expected, actual, prefix=[])
+        def handle_keyvalue(errors, expected, actual, negate=false, prefix=[])
           expected.map do |key, value|
             new_prefix = prefix + [key]
             if has_key?(actual, key)
-              traverse(errors, value, fetch(actual, key), new_prefix)
+              traverse(errors, value, fetch(actual, key), negate, new_prefix)
             else
-              errors[new_prefix.join("/")] = :no_key
-              false
+              errors[new_prefix.join("/")] = :no_key unless negate
+              conditionally_negate(false, negate)
             end
           end.all? || false
         end
 
-        def handle_hash(errors, expected, actual, prefix=[])
+        def handle_hash(errors, expected, actual, negate=false, prefix=[])
           return nil unless expected.is_a?(Hash)
 
-          handle_keyvalue(errors, expected, actual, prefix)
+          handle_keyvalue(errors, expected, actual, negate, prefix)
         end
 
-        def handle_array(errors, expected, actual, prefix=[])
+        def handle_array(errors, expected, actual, negate=false, prefix=[])
           return nil unless expected.is_a?(Array)
 
           transformed_expected = expected.each_with_index.map { |v, k| [k, v] }
-          handle_keyvalue(errors, transformed_expected, actual, prefix)
+          handle_keyvalue(errors, transformed_expected, actual, negate, prefix)
         end
 
-        def handle_value(errors, expected, actual, prefix=[])
+        def handle_value(errors, expected, actual, negate=false, prefix=[])
           return nil unless expected.is_a?(String) || expected.is_a?(Numeric)
 
-          if actual == expected
+          if conditionally_negate(actual == expected, negate)
             true
           else
             errors[prefix.join("/")] = {
@@ -61,10 +61,10 @@ module RSpec
           end
         end
 
-        def handle_regex(errors, expected, actual, prefix=[])
+        def handle_regex(errors, expected, actual, negate=false, prefix=[])
           return nil unless expected.is_a?(Regexp)
 
-          if expected.match(actual)
+          if conditionally_negate(!!expected.match(actual), negate)
             true
           else
             errors[prefix.join("/")] = {
@@ -100,6 +100,10 @@ module RSpec
           else
             default
           end
+        end
+
+        def conditionally_negate(value, negate=false)
+          value ^ negate
         end
 
       end
