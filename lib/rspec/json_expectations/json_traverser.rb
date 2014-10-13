@@ -84,7 +84,7 @@ module RSpec
 
         def has_key?(actual, key)
           if actual.is_a?(Hash)
-            actual.has_key?(key.to_s)
+            actual.has_key?(key) || actual.has_key?(key.to_s)
           elsif actual.is_a?(Array)
             actual.count > key
           else
@@ -94,7 +94,7 @@ module RSpec
 
         def fetch(actual, key, default=nil)
           if actual.is_a?(Hash)
-            actual[key.to_s]
+            actual.has_key?(key) ? actual[key] : actual[key.to_s]
           elsif actual.is_a?(Array)
             actual[key]
           else

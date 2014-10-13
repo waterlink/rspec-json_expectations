@@ -41,10 +41,13 @@ RSpec::Matchers.define :include_json do |expected|
         "Expected value must be a json for include_json matcher"
     end
 
+    representation = actual
+    representation = JSON.parse(actual) if String === actual
+
     RSpec::JsonExpectations::JsonTraverser.traverse(
       @include_json_errors = { _negate: negate },
       expected,
-      JSON.parse(actual),
+      representation,
       negate
     )
   end
