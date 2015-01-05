@@ -8,6 +8,7 @@ Feature: include_json matcher with hash
           """ruby
           require "rspec/json_expectations"
           """
+
       And a local "SIMPLE_HASH" with:
           """ruby
           {
@@ -16,6 +17,7 @@ Feature: include_json matcher with hash
             name: "John"
           }
           """
+
       And a local "BIG_HASH" with:
           """ruby
           {
@@ -25,6 +27,16 @@ Feature: include_json matcher with hash
             name: "John",
             profile_id: 39,
             role: "admin"
+          }
+          """
+
+      And a local "HASH_WITH_SIMPLE_TYPES" with:
+          """ruby
+          {
+            phone: nil,
+            name: "A guy without phone",
+            without_phone: true,
+            communicative: false
           }
           """
 
@@ -112,4 +124,27 @@ Feature: include_json matcher with hash
           1 example, 0 failures
           """
 
+  Scenario: Expecting json response to contain null(s), booleans, etc
+    Given a file "spec/nil_values_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { %{HASH_WITH_SIMPLE_TYPES} }
+
+            it "has no phone" do
+              expect(subject).to include_json(
+                name: "A guy without phone",
+                phone: nil,
+                communicative: false,
+                without_phone: true
+              )
+            end
+          end
+          """
+     When I run "rspec spec/nil_values_spec.rb"
+     Then I see:
+          """
+          1 example, 0 failures
+          """
 

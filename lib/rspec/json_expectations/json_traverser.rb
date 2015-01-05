@@ -7,7 +7,8 @@ module RSpec
     # match. Errors are accumulated in errors hash for each
     # json atom paths.
     class JsonTraverser
-      SUPPORTED_VALUES = [Hash, String, Numeric, Regexp, Array]
+      HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass]
+      SUPPORTED_VALUES = [Hash, Regexp, Array] + HANDLED_BY_SIMPLE_VALUE_HANDLER
 
       class << self
         def traverse(errors, expected, actual, negate=false, prefix=[])
@@ -48,7 +49,7 @@ module RSpec
         end
 
         def handle_value(errors, expected, actual, negate=false, prefix=[])
-          return nil unless expected.is_a?(String) || expected.is_a?(Numeric)
+          return nil unless handled_by_simple_value?(expected)
 
           if conditionally_negate(actual == expected, negate)
             true
@@ -59,6 +60,10 @@ module RSpec
             }
             false
           end
+        end
+
+        def handled_by_simple_value?(expected)
+          HANDLED_BY_SIMPLE_VALUE_HANDLER.any? { |type| type === expected }
         end
 
         def handle_regex(errors, expected, actual, negate=false, prefix=[])
