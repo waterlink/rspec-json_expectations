@@ -8,7 +8,8 @@ module RSpec
     # json atom paths.
     class JsonTraverser
       HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass]
-      SUPPORTED_VALUES = [Hash, Regexp, Array] + HANDLED_BY_SIMPLE_VALUE_HANDLER
+      RSPECMATCHERS = defined?(RSpec::Matchers) ? [RSpec::Matchers::BuiltIn::BaseMatcher] : []
+      SUPPORTED_VALUES = [Hash, Regexp, Array] + HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
 
       class << self
         def traverse(errors, expected, actual, negate=false, prefix=[])
@@ -17,6 +18,7 @@ module RSpec
             handle_array(errors, expected, actual, negate, prefix),
             handle_value(errors, expected, actual, negate, prefix),
             handle_regex(errors, expected, actual, negate, prefix),
+            handle_rspec_matcher(errors, expected, actual, negate, prefix),
             handle_unsupported(expected)
           ].any?
         end
@@ -75,6 +77,21 @@ module RSpec
             errors[prefix.join("/")] = {
               actual: actual,
               expected: expected
+            }
+            false
+          end
+        end
+
+        def handle_rspec_matcher(errors, expected, actual, negate=false, prefix=[])
+          return nil unless defined?(RSpec::Matchers)
+          return nil unless expected.is_a?(RSpec::Matchers::BuiltIn::BaseMatcher)
+
+          if conditionally_negate(!!expected.matches?(actual), negate)
+            true
+          else
+            errors[prefix.join("/")] = {
+              actual: actual,
+              expected: expected.description
             }
             false
           end
