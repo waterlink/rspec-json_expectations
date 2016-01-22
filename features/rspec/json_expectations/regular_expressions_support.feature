@@ -28,6 +28,37 @@ Feature: regular expressions support with include_json matcher
             "url": "https://test.example.org/api/v6/users/5wmsx6ae7p.json"
           }
           """
+      And a local "COMPLEX_JSON" with:
+          """json
+          {
+            "balance": 25.0,
+            "status": true,
+            "avatar_url": null
+          }
+          """
+
+  Scenario: Expecting json string to include typed json with regex
+    Given a file "spec/simple_example_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { '%{COMPLEX_JSON}' }
+
+            it "has basic info about user" do
+              expect(subject).to include_json(
+                balance: /\d/,
+                status: /true|false/,
+                avatar_url: /^?/
+              )
+            end
+          end
+          """
+     When I run "rspec spec/simple_example_spec.rb"
+     Then I see:
+          """
+          1 example, 0 failures
+          """
 
   Scenario: Expecting json string to include simple json with regex
     Given a file "spec/simple_example_spec.rb" with:
