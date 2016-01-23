@@ -71,7 +71,7 @@ module RSpec
         def handle_regex(errors, expected, actual, negate=false, prefix=[])
           return nil unless expected.is_a?(Regexp)
 
-          if conditionally_negate(!!expected.match(actual), negate)
+          if conditionally_negate(!!expected.match(actual.to_s), negate)
             true
           else
             errors[prefix.join("/")] = {
