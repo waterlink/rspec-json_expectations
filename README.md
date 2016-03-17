@@ -96,6 +96,11 @@ rspec ./spec/user_api_spec.rb:25 # User API has some additional info about user
 
 For other features look into documentation: https://www.relishapp.com/waterlink/rspec-json-expectations/docs/json-expectations
 
+## Development
+
+- `bundle install` to install all dependencies.
+- `bin/build` to run the test suite
+
 ## Contributing
 
 1. Fork it ( https://github.com/waterlink/rspec-json_expectations/fork )
