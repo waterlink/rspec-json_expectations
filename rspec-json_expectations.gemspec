@@ -6,8 +6,8 @@ require 'rspec/json_expectations/version'
 Gem::Specification.new do |spec|
   spec.name          = "rspec-json_expectations"
   spec.version       = RSpec::JsonExpectations::VERSION
-  spec.authors       = ["Alexey Fedorov"]
-  spec.email         = ["alexey.fedorov@wimdu.com"]
+  spec.authors       = ["Oleksii Fedorov"]
+  spec.email         = ["waterlink000@gmail.com"]
   spec.summary       = %q{Set of matchers and helpers to allow you test your APIs responses like a pro.}
   spec.description   = ""
   spec.homepage      = "https://github.com/waterlink/rspec-json_expectations"
