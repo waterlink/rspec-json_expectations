@@ -1,4 +1,5 @@
 require "json"
+require "rspec/json_expectations/matchers"
 
 module RSpec
   module JsonExpectations
@@ -9,13 +10,15 @@ module RSpec
     class JsonTraverser
       HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass]
       RSPECMATCHERS = defined?(RSpec::Matchers) ? [RSpec::Matchers::BuiltIn::BaseMatcher] : []
-      SUPPORTED_VALUES = [Hash, Regexp, Array] + HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
+      SUPPORTED_VALUES = [Hash, Regexp, Array, Matchers::UnorderedArrayMatcher] +
+        HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
 
       class << self
         def traverse(errors, expected, actual, negate=false, prefix=[])
           [
             handle_hash(errors, expected, actual, negate, prefix),
             handle_array(errors, expected, actual, negate, prefix),
+            handle_unordered(errors, expected, actual, negate, prefix),
             handle_value(errors, expected, actual, negate, prefix),
             handle_regex(errors, expected, actual, negate, prefix),
             handle_rspec_matcher(errors, expected, actual, negate, prefix),
@@ -48,6 +51,15 @@ module RSpec
 
           transformed_expected = expected.each_with_index.map { |v, k| [k, v] }
           handle_keyvalue(errors, transformed_expected, actual, negate, prefix)
+        end
+
+        def handle_unordered(errors, expected, actual, negate=false, prefix=[])
+          return nil unless expected.is_a?(Matchers::UnorderedArrayMatcher)
+
+          conditionally_negate(
+            expected.match(errors, actual, prefix),
+            negate
+          )
         end
 
         def handle_value(errors, expected, actual, negate=false, prefix=[])
