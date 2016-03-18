@@ -14,7 +14,8 @@ module RSpec
           [
             render_no_key(path, error, negate),
             render_not_eq(path, error, negate),
-            render_not_match(path, error, negate)
+            render_not_match(path, error, negate),
+            render_missing(path, error, negate)
           ].select { |e| e }.first
         end
 
@@ -42,12 +43,31 @@ module RSpec
           } if error_is_not_match?(error)
         end
 
+        def render_missing(path, error, negate=false)
+          return unless error_is_missing?(error)
+
+          prefix = "#{path}/" if path && !path.empty?
+
+          items = error[:missing].map do |item|
+            %{
+          json atom at path "#{prefix}#{item[:index]}" is missing
+
+            expected: #{item[:item].inspect}
+                 got: nil
+            }
+          end.join("\n")
+        end
+
         def error_is_not_eq?(error)
           error.is_a?(Hash) && error.has_key?(:expected) && !error[:expected].is_a?(Regexp)
         end
 
         def error_is_not_match?(error)
           error.is_a?(Hash) && error.has_key?(:expected) && error[:expected].is_a?(Regexp)
+        end
+
+        def error_is_missing?(error)
+          error.is_a?(Hash) && error.has_key?(:missing)
         end
       end
     end
