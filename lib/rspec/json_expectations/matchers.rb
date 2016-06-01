@@ -55,6 +55,64 @@ RSpec::Matchers.define :include_json do |expected|
   end
 end
 
+RSpec::Matchers.define :include_unordered_json do |expected|
+
+  # RSpec 2 vs 3
+  if respond_to?(:failure_message)
+    match do |actual|
+      traverse(expected, actual, false)
+    end
+
+    match_when_negated do |actual|
+      traverse(expected, actual, true)
+    end
+
+    failure_message do |actual|
+       RSpec::JsonExpectations::FailurePresenter.render(@include_json_errors)
+    end
+
+    failure_message_when_negated do |actual|
+       RSpec::JsonExpectations::FailurePresenter.render(@include_json_errors)
+    end
+  else
+    match_for_should do |actual|
+      traverse(expected, actual, false)
+    end
+
+    match_for_should_not do |actual|
+      traverse(expected, actual, true)
+    end
+
+    failure_message_for_should do |actual|
+      RSpec::JsonExpectations::FailurePresenter.render(@include_json_errors)
+    end
+
+    failure_message_for_should_not do |actual|
+      RSpec::JsonExpectations::FailurePresenter.render(@include_json_errors)
+    end
+  end
+
+  def traverse(expected, actual, negate=false)
+    unless expected.is_a?(Array)
+      raise ArgumentError,
+        "Expected value must be a array for include_unordered_json matcher"
+    end
+
+    actual_json = actual
+    actual_json = JSON.parse(actual) if String === actual
+
+    expected_wrapped_in_unordered_array = \
+      RSpec::JsonExpectations::Matchers::UnorderedArrayMatcher.new(expected)
+
+    RSpec::JsonExpectations::JsonTraverser.traverse(
+      @include_json_errors = { _negate: negate },
+      expected_wrapped_in_unordered_array,
+      actual_json,
+      negate
+    )
+  end
+end
+
 module RSpec
   module JsonExpectations
     module Matchers
