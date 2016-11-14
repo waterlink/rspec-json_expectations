@@ -44,6 +44,30 @@ Feature: RSpec matcher support for include_json matcher
           1 example, 0 failures
           """
 
+  Scenario: Expecting jsong string to include simple json using an rspec alias matcher
+    Given a file "spec/matcher_example_spec.rb" with:
+           """ruby
+           require "spec_helper"
+
+           RSpec.describe "A json response" do
+             subject { '%{SIMPLE_JSON}' }
+
+             it "has basic info about user" do
+               expect(subject).to include_json(
+                 id: a_kind_of(Numeric),
+                 email: "john.smith@example.com",
+                 name: "John",
+                 score: (be > 30)
+               )
+             end
+           end
+           """
+           When I run "rspec spec/matcher_example_spec.rb"
+           Then I see:
+                """
+                1 example, 0 failures
+                """
+
   Scenario: Expecting json string to include simple json using an rspec matcher with failure
     Given a file "spec/matcher_example_fail_spec.rb" with:
           """ruby
