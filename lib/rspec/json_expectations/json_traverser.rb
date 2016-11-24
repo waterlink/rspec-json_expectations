@@ -14,11 +14,11 @@ module RSpec
         HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
 
       class << self
-        def traverse(errors, expected, actual, negate=false, prefix=[])
+        def traverse(errors, expected, actual, negate=false, prefix=[], match_size: false)
           [
             handle_hash(errors, expected, actual, negate, prefix),
             handle_array(errors, expected, actual, negate, prefix),
-            handle_unordered(errors, expected, actual, negate, prefix),
+            handle_unordered(errors, expected, actual, negate, prefix, match_size: match_size),
             handle_value(errors, expected, actual, negate, prefix),
             handle_regex(errors, expected, actual, negate, prefix),
             handle_rspec_matcher(errors, expected, actual, negate, prefix),
@@ -53,13 +53,30 @@ module RSpec
           handle_keyvalue(errors, transformed_expected, actual, negate, prefix)
         end
 
-        def handle_unordered(errors, expected, actual, negate=false, prefix=[])
+        def handle_unordered(errors, expected, actual, negate=false, prefix=[], match_size:)
           return nil unless expected.is_a?(Matchers::UnorderedArrayMatcher)
 
-          conditionally_negate(
-            expected.match(errors, actual, prefix),
-            negate
-          )
+          match_size_assertion_result = \
+            match_size_of_collection(errors, expected, actual, prefix, match_size: match_size)
+
+          if match_size_assertion_result == false
+            false
+          else
+            conditionally_negate(expected.match(errors, actual, prefix), negate)
+          end
+        end
+
+        def match_size_of_collection(errors, expected, actual, prefix, match_size:)
+          return nil unless match_size
+          return nil if expected.size == actual.size
+
+          errors[prefix.join("/")] = {
+            _size_mismatch_error: true,
+            expected: expected.unwrap_array,
+            actual: actual,
+            extra_elements: actual - expected.unwrap_array,
+          }
+          false
         end
 
         def handle_value(errors, expected, actual, negate=false, prefix=[])
