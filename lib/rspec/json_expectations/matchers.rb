@@ -59,7 +59,8 @@ RSpec::JsonExpectations::MatcherFactory.new(:match_unordered_json).define_matche
       expected_wrapped_in_unordered_array,
       actual_json,
       negate,
-      match_size: true,
+      [],
+      { match_size: true }
     )
   end
 end
