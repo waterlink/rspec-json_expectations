@@ -62,11 +62,11 @@ Feature: RSpec matcher support for include_json matcher
              end
            end
            """
-           When I run "rspec spec/matcher_example_spec.rb"
-           Then I see:
-                """
-                1 example, 0 failures
-                """
+     When I run "rspec spec/matcher_example_spec.rb"
+     Then I see:
+          """
+          1 example, 0 failures
+          """
 
   Scenario: Expecting json string to include simple json using an rspec matcher with failure
     Given a file "spec/matcher_example_fail_spec.rb" with:
