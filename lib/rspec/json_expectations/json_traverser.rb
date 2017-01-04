@@ -9,7 +9,7 @@ module RSpec
     # json atom paths.
     class JsonTraverser
       HANDLED_BY_SIMPLE_VALUE_HANDLER = [String, Numeric, FalseClass, TrueClass, NilClass]
-      RSPECMATCHERS = defined?(RSpec::Matchers) ? [RSpec::Matchers::BuiltIn::BaseMatcher] : []
+      RSPECMATCHERS = [RSpec::Matchers::BuiltIn::BaseMatcher]
       SUPPORTED_VALUES = [Hash, Regexp, Array, Matchers::UnorderedArrayMatcher] +
         HANDLED_BY_SIMPLE_VALUE_HANDLER + RSPECMATCHERS
 
