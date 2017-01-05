@@ -105,3 +105,22 @@ Feature: match_unordered_json matcher
           """
                    the extra elements were:        [2]
           """
+
+  Scenario: Expecting json array to successfully not match when the arrays do not match
+    Given a file "spec/simple_example_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { '[1, 2]' }
+
+            it "successfully does not match when the the size is unequal" do
+              expect(subject).to_not match_unordered_json([1, 2, 3])
+            end
+          end
+          """
+     When I run "rspec spec/simple_example_spec.rb"
+     Then I see:
+          """
+          1 example, 0 failures
+          """

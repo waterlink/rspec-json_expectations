@@ -60,7 +60,7 @@ module RSpec
             match_size_of_collection(errors, expected, actual, prefix, options)
 
           if match_size_assertion_result == false
-            false
+            conditionally_negate(false, negate)
           else
             conditionally_negate(expected.match(errors, actual, prefix), negate)
           end
