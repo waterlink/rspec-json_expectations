@@ -124,3 +124,22 @@ Feature: match_unordered_json matcher
           """
           1 example, 0 failures
           """
+
+  Scenario: Expecting json array to fail to not match when the arrays do match
+    Given a file "spec/simple_example_spec.rb" with:
+          """ruby
+          require "spec_helper"
+
+          RSpec.describe "A json response" do
+            subject { '[1, 2, 3]' }
+
+            it "fails to not match when the arrays do match" do
+              expect(subject).to_not match_unordered_json([1, 2, 3])
+            end
+          end
+          """
+     When I run "rspec spec/simple_example_spec.rb"
+     Then I see:
+          """
+          1 example, 1 failure
+          """
