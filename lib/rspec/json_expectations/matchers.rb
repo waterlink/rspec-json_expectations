@@ -41,11 +41,40 @@ RSpec::JsonExpectations::MatcherFactory.new(:include_unordered_json).define_matc
   end
 end
 
+RSpec::JsonExpectations::MatcherFactory.new(:match_unordered_json).define_matcher do
+  def traverse(expected, actual, negate=false)
+    unless expected.is_a?(Array)
+      raise ArgumentError,
+        "Expected value must be a array for match_unordered_json matcher"
+    end
+
+    actual_json = actual
+    actual_json = JSON.parse(actual) if String === actual
+
+    expected_wrapped_in_unordered_array = \
+      RSpec::JsonExpectations::Matchers::UnorderedArrayMatcher.new(expected)
+
+    RSpec::JsonExpectations::JsonTraverser.traverse(
+      @include_json_errors = { _negate: negate },
+      expected_wrapped_in_unordered_array,
+      actual_json,
+      negate,
+      [],
+      { match_size: true }
+    )
+  end
+end
+
 module RSpec
   module JsonExpectations
     module Matchers
       class UnorderedArrayMatcher
+        extend Forwardable
+
         attr_reader :array
+
+        def_delegators :array, :size
+
         def initialize(array)
           @array = array
         end
@@ -74,6 +103,10 @@ module RSpec
 
         def all?(&blk)
           array.each_with_index.all?(&blk)
+        end
+
+        def unwrap_array
+          array
         end
       end
 
