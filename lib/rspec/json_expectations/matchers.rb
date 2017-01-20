@@ -1,3 +1,5 @@
+require "forwardable"
+
 RSpec::JsonExpectations::MatcherFactory.new(:include_json).define_matcher do
   def traverse(expected, actual, negate=false)
     unless expected.is_a?(Hash) ||
