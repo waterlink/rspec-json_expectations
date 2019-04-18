@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/waterlink/rspec-json_expectations.svg?branch=master)](https://travis-ci.org/waterlink/rspec-json_expectations)
 
-Set of matchers and helpers to allow you test your APIs responses like a pro.
+Set of matchers and helpers for RSpec 3 to allow you test your JSON API responses like a pro.
 
 ## Installation
 
@@ -43,7 +43,7 @@ RSpec.describe "User API" do
       name: "John"
     )
   end
-  
+
   it "has some additional info about user" do
     expect(subject).to include_json(
       premium: "gold",
@@ -62,27 +62,27 @@ Failures:
 
   1) User API has basic info about user
      Failure/Error: expect(subject).to include_json(
-       
+
                  json atom at path "id" is not equal to expected value:
-       
+
                    expected: 25
                         got: 37
-                 
+
                  json atom at path "name" is not equal to expected value:
-       
+
                    expected: "John"
                         got: "Smith J."
-                 
+
      # ./spec/user_api_spec.rb:18:in `block (2 levels) in <top (required)>'
 
   2) User API has some additional info about user
      Failure/Error: expect(subject).to include_json(
-       
+
                  json atom at path "premium" is not equal to expected value:
-       
+
                    expected: "gold"
                         got: "silver"
-                 
+
      # ./spec/user_api_spec.rb:26:in `block (2 levels) in <top (required)>'
 
 Finished in 0.00102 seconds (files took 0.0853 seconds to load)
