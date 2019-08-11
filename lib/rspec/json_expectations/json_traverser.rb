@@ -83,7 +83,11 @@ module RSpec
         def handle_value(errors, expected, actual, negate=false, prefix=[])
           return nil unless handled_by_simple_value?(expected)
 
+          actual_as_json = actual.class.method_defined?(:as_json) ? actual.as_json : actual
+          expected_as_json = expected.class.method_defined?(:as_json) ? expected.as_json : expected
           if conditionally_negate(actual == expected, negate)
+            true
+          elsif conditionally_negate(actual_as_json == expected_as_json, negate)
             true
           else
             errors[prefix.join("/")] = {
@@ -95,7 +99,8 @@ module RSpec
         end
 
         def handled_by_simple_value?(expected)
-          HANDLED_BY_SIMPLE_VALUE_HANDLER.any? { |type| type === expected }
+          HANDLED_BY_SIMPLE_VALUE_HANDLER.any? { |type| type === expected } ||
+            expected.class.method_defined?(:as_json)
         end
 
         def handle_regex(errors, expected, actual, negate=false, prefix=[])
@@ -129,10 +134,11 @@ module RSpec
         end
 
         def handle_unsupported(expected)
-          unless SUPPORTED_VALUES.any? { |type| expected.is_a?(type) }
-            raise NotImplementedError,
-              "#{expected} expectation is not supported"
-          end
+          return nil if SUPPORTED_VALUES.any? { |type| expected.is_a?(type) }
+          return nil if handled_by_simple_value?(expected)
+
+          raise NotImplementedError,
+            "#{expected} expectation is not supported"
         end
 
         def has_key?(actual, key)
