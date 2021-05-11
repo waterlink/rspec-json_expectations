@@ -7,7 +7,7 @@ module RSpec
 
       def define_matcher(&block)
         RSpec::Matchers.define(@matcher_name) do |expected|
-          yield
+          self.module_eval(&block)
 
           match do |actual|
             traverse(expected, actual, false)
