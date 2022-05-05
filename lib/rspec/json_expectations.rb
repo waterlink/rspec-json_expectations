@@ -1,4 +1,3 @@
-require "rspec/core"
 require "rspec/expectations"
 require "rspec/json_expectations/matcher_factory"
 require "rspec/json_expectations/version"
