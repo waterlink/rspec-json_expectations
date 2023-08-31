@@ -16,7 +16,30 @@ RSpec::JsonExpectations::MatcherFactory.new(:include_json).define_matcher do
       @include_json_errors = { _negate: negate },
       expected,
       representation,
-      negate
+      negate,
+      )
+  end
+end
+
+RSpec::JsonExpectations::MatcherFactory.new(:match_json).define_matcher do
+  def traverse(expected, actual, negate=false)
+    unless expected.is_a?(Hash) ||
+      expected.is_a?(Array) ||
+      expected.is_a?(::RSpec::JsonExpectations::Matchers::UnorderedArrayMatcher)
+      raise ArgumentError,
+            "Expected value must be a json for match_json matcher"
+    end
+
+    representation = actual
+    representation = JSON.parse(actual) if String === actual
+
+    RSpec::JsonExpectations::JsonTraverser.traverse(
+      @include_json_errors = { _negate: negate },
+      expected,
+      representation,
+      negate,
+      [],
+      { json_match: true }
     )
   end
 end
