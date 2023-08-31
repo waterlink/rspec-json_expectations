@@ -16,7 +16,7 @@ module RSpec
       class << self
         def traverse(errors, expected, actual, negate=false, prefix=[], options={})
           [
-            handle_hash(errors, expected, actual, negate, prefix),
+            handle_hash(errors, expected, actual, negate, prefix, options),
             handle_array(errors, expected, actual, negate, prefix),
             handle_unordered(errors, expected, actual, negate, prefix, options),
             handle_value(errors, expected, actual, negate, prefix),
@@ -40,10 +40,13 @@ module RSpec
           end.all? || false
         end
 
-        def handle_hash(errors, expected, actual, negate=false, prefix=[])
+        def handle_hash(errors, expected, actual, negate=false, prefix=[], options={})
           return nil unless expected.is_a?(Hash)
-
-          handle_keyvalue(errors, expected, actual, negate, prefix)
+          if options[:json_match]
+            hash_size_matcher(errors, expected, actual, negate, prefix, options)
+          else
+            handle_keyvalue(errors, expected, actual, negate, prefix)
+          end
         end
 
         def handle_array(errors, expected, actual, negate=false, prefix=[])
@@ -78,6 +81,20 @@ module RSpec
             extra_elements: actual - expected.unwrap_array,
           }
           false
+        end
+
+        def hash_size_matcher(errors, expected, actual, negate, prefix=[], options={})
+          return nil unless options[:json_match]
+          if expected.size != actual.size
+            new_prefix = (expected.keys.map{|k| k.to_s} + actual.keys) - (actual.keys & expected.keys.map{|k| k.to_s})
+            errors[new_prefix.join(",")] = {
+              expected: expected,
+              actual: actual,
+            }
+            false
+          else
+            handle_keyvalue(errors, expected, actual, negate, prefix)
+          end
         end
 
         def handle_value(errors, expected, actual, negate=false, prefix=[])
@@ -131,7 +148,7 @@ module RSpec
         def handle_unsupported(expected)
           unless SUPPORTED_VALUES.any? { |type| expected.is_a?(type) }
             raise NotImplementedError,
-              "#{expected} expectation is not supported"
+               "#{expected} expectation is not supported"
           end
         end
 
